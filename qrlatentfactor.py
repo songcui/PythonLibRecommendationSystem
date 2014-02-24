@@ -9,7 +9,8 @@ import random;
 
 def qr(k, learningRate, lamda_user, lamda_item, noOfIteration, file_training):
 ### k is the latent dimension for QR matrix factorization.  learningRate is the 
-### rate for parameter updating, lamda_user, lamda_item are regularization ### parameters for p and q,  noOfIteration is an integer specifying the 
+### rate for parameter updating, lamda_user, lamda_item are regularization 
+### parameters for p and q,  noOfIteration is an integer specifying the 
 ### number of iterations to run, file_training is a string specifying the file 
 ### directory for training dataset.
     maximumRating = 0;
@@ -54,11 +55,19 @@ def qr(k, learningRate, lamda_user, lamda_item, noOfIteration, file_training):
         for j in range (len(lines)):
             error[i]= error[i] + math.pow(rating[j] - np.dot(p[userID[j],:], q[itemID[j],:]),2);
         
-        error[i] = math.sqrt(error[i])/len(lines)
+        error[i] = math.sqrt(error[i])/len(lines);
 
     return error, p, q;
         
 def qrPlusBaseline(k, learningRate, lamda_user, lamda_item, lamda_qr_user, lamda_qr_item, noOfIteration, file_training):
+### k is the latent dimension for QR matrix factorization.  learningRate is the 
+### rate for parameter updating, lamda_qr_user, lamda_qr_item are regularization 
+### parameters for p and q,  lamda_user, lamda_item are regularization 
+### parameters for user bias and item bias. noOfIteration is an integer specifying the 
+### number of iterations to run, file_training is a string specifying the file 
+### directory for training dataset.    
+    
+    
     maximumRating = 0;
     file = open(file_training, 'r');
     lines = file.readlines();
@@ -83,11 +92,21 @@ def qrPlusBaseline(k, learningRate, lamda_user, lamda_item, lamda_qr_user, lamda
         count=count+1;
 
     maximumRating = float(maximumRating);
+    
+    #### Compute the global average of the ratings:    
+    
     global_average = sum(rating)/len(lines);
 
-    #### Inialization for the latent model recommendation system
+    #### Parameter initialization:
+    
+    #### zero initialization for p and q:
     p = np.array([[float(0.0) for i in range(k)] for j in range (int(numberOfUsers))]);
     q = np.array([[float(0.0) for i in range(k)] for j in range (int(numberOfItems))]);
+    
+    ### user bias and item bias are set as the average rating received in the training set for a specific user
+    ### or an item minus the global average. This is a good guess as it is the rational behind defining the user bias
+    ### and item bias.
+    
     b_user = np.zeros((numberOfUsers));
     b_item = np.zeros((numberOfItems));
     for i in range (int(numberOfUsers)):
@@ -117,6 +136,7 @@ def qrPlusBaseline(k, learningRate, lamda_user, lamda_item, lamda_qr_user, lamda
 
         for j in range (len(lines)):
             error[i]= error[i] + math.pow(rating[j]-global_average-b_user[userID[j]]-b_item[itemID[j]]-np.dot(p[userID[j],:], q[itemID[j],:]),2);
+        error[i] = math.sqrt(error[i])/len(lines);
 
     return error, b_user, b_item, p, q;
 
