@@ -37,11 +37,14 @@ def qr(k, learningRate, lamda_user, lamda_item, noOfIteration, file_training):
 
     maximumRating = float(maximumRating);
 
-    #### Inialization for the latent model recommendation system
+    #### Inialization for the latent model p and q. We use random initianization method here. Based on my experience,
+    #### it will converge faster than zero initialization
+    
     p = np.array([[float(random.uniform(0, math.sqrt(maximumRating/k))) for i in range(k)] for j in range (int(numberOfUsers))]);
     q = np.array([[float(random.uniform(0, math.sqrt(maximumRating/k))) for i in range(k)] for j in range (int(numberOfItems))]);
 
     #### parameter update by Stochastic Gradient Descent
+    
     error = np.zeros((noOfIteration));
     for i in range (noOfIteration):
         for j in range (len(lines)):
@@ -50,6 +53,8 @@ def qr(k, learningRate, lamda_user, lamda_item, noOfIteration, file_training):
 
         for j in range (len(lines)):
             error[i]= error[i] + math.pow(rating[j] - np.dot(p[userID[j],:], q[itemID[j],:]),2);
+        
+        error[i] = math.sqrt(error[i])/len(lines)
 
     return error, p, q;
         
