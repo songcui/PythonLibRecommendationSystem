@@ -1,5 +1,6 @@
-
-### This function implements qr latent factor model for the recommendation system. Stochastic gradient descent is used to update the parameters. 
+### This function implements qr latent factor model for the 
+### recommendation system. Stochastic gradient descent is 
+### used to update the parameters. 
 
 
 import numpy as np;
@@ -7,7 +8,10 @@ import math;
 import random;
 
 def qr(k, learningRate, lamda_user, lamda_item, noOfIteration, file_training):
-
+### k is the latent dimension for QR matrix factorization.  learningRate is the 
+### rate for parameter updating, lamda_user, lamda_item are regularization ### parameters for p and q,  noOfIteration is an integer specifying the 
+### number of iterations to run, file_training is a string specifying the file 
+### directory for training dataset.
     maximumRating = 0;
     file = open(file_training, 'r');
     lines = file.readlines();
